@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        background-color: red;
+      }
+      #container {
+        width: 500px;
+        height: 250px;
+        background-color: orange;
+
+        /* 텍스트 가운데 정렬 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        position: absolute;
+
+        /* margin auto를 사용해 정렬하는 방법 */
+        /* margin: auto;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0; */
+
+        /* transform */
+        left: 50%;
+        top: 50%;
+        /*
+        현재위치에서 요소를 이동
+        translate의 퍼센테이지는 자기자신 요소 크기의 %
+        */
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>요소의 중앙에 배치</h1>
+    </div>
+  </body>
+</html>

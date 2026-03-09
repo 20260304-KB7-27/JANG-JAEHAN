@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+
+      .box {
+        width: 200px;
+        height: 100px;
+        background-color: white;
+        border: 1px solid black;
+        padding: 10px;
+        margin: 5px;
+        float: left;
+      }
+
+      .problem-1 {
+        background-color: pink;
+      }
+      .problem-2 {
+        background-color: yellowgreen;
+      }
+
+      /* clearfix */
+      .clearfix::after {
+        content: '';
+        display: block;
+        clear: both;
+        height: 0;
+        visibility: hidden;
+      }
+      .flex-container {
+        width: 100%;
+        border: 1px solid yellow;
+        padding: 10px;
+        background-color: blue;
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .flex-box {
+        width: 200px;
+        height: 100px;
+        background-color: green;
+        border: 1px solid red;
+        padding: 10px;
+        margin: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <h2>1. 부모 요소 높이 붕괴 문제</h2>
+    <div class="container problem-1 clearfix">
+      <div class="box">Float 요소 1</div>
+      <div class="box">Float 요소 2</div>
+      <div class="box">Float 요소 3</div>
+    </div> -->
+    <hr />
+
+    <!-- <h2>2. 레이아웃 깨짐 문제</h2>
+    <div class="container problem-2">
+      <div class="box">Float 요소 1</div>
+      <div class="box">Float 요소 2</div>
+    </div>
+    <div class="next-content">
+      이 콘텐츠는 float 요소 다음에 오는데, float의 영향을 받아 의도치 않게
+      배치됩니다.
+    </div> -->
+
+    <h2>1. 부모 요소 높이 붕괴 문제</h2>
+    <div class="flex-container">
+      <div class="flex-box">Float 요소 1</div>
+      <div class="flex-box">Float 요소 2</div>
+      <div class="flex-box">Float 요소 3</div>
+    </div>
+    <hr />
+  </body>
+</html>
