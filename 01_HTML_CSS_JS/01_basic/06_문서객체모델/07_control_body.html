@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Script스니펫</title>
+    <script>
+      window.onload = function () {
+        // 사용자 정의 속성
+        // data-* : HTML 표준에서 공식으로 권장하는 사용자 정의 속성 추가 방식
+        // ex) data-custom="value"
+
+        document.body.setAttribute('data-custom', 'value');
+        const dataCustom = document.body.getAttribute('data-custom');
+        alert(dataCustom);
+      };
+    </script>
+  </head>
+
+  <body>
+    <div></div>
+  </body>
+</html>

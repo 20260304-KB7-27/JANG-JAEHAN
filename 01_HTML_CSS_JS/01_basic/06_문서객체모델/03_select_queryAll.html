@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Script스니펫</title>
+    <script>
+      window.onload = function () {
+        // querySelectorAll
+        // 주어진 CSS 선택자에 일치하는 모든 요소를 선택
+
+        const headers = document.querySelectorAll('h1');
+        // const header1 = document.querySelectorAll('h1')[2];
+        // header1.style.color = 'blue';
+        // console.log(headers);
+
+        for (let i = 0; i < headers.length; i++) {
+          let header = headers[i];
+          header.style.color = 'orange';
+          header.style.backgroundColor = 'red';
+          header.innerHTML = 'From JavaScript';
+        }
+
+        // headers.forEach(function (header) {
+        //   header.style.color = 'orange';
+        //   header.style.backgroundColor = 'red';
+        //   header.innerHTML = 'From JavaScript';
+        // });
+      };
+    </script>
+  </head>
+
+  <body>
+    <h1>Header</h1>
+    <h1>Header</h1>
+    <h1>Header</h1>
+    <div></div>
+  </body>
+</html>

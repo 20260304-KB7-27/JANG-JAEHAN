@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Script스니펫</title>
+    <script>
+      // window.onload
+      // 웹페이지의 모든 콘텐츠 (HTML, CSS, Image)가 로드된 이후에 실행되는 이벤트 핸들러
+      window.onload = function () {
+        const header = document.getElementById('header'); // 요소 선택
+        header.style.color = 'orange';
+        header.style.backgroundColor = 'red';
+        header.innerText = 'From JavaScript';
+
+        // // console.log(header.innerHTML);
+        // // innerHTML은 <strong> 태그를 HTML 요소로 적용함
+        // header.innerHTML = '<strong>From JavaScript</strong>';
+
+        // // innerText는 <strong> 태그를 텍스트로 적용함
+        // // -> 브라우저에 보이는 텍스트를 기준
+        // // CSS 렌더링에 영향을 받음
+        // header.innerText = '<strong>From JavaScript</strong>';
+
+        // const box = document.getElementById('box');
+        // console.log(box.innerText);
+
+        // // textContent
+        // // 데이터만 처리할 때는 주로 textContent만 사용
+        // console.log(box.textContent);
+      };
+    </script>
+  </head>
+
+  <body>
+    <h1 id="header">Header</h1>
+    <!-- <div id="box">
+      Hello
+      <span style="display: none">World</span>
+    </div> -->
+  </body>
+</html>

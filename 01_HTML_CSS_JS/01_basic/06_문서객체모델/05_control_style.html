@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Script스니펫</title>
+    <script>
+      window.onload = function () {
+        let output = '';
+        for (let i = 0; i < 256; i++) {
+          output += '<div></div>';
+        }
+        document.body.innerHTML = output; //<div></div> 가 256개가 body 태그로 들어감
+
+        let divs = document.querySelectorAll('div'); //NodeList
+
+        for (let i = 0; i < divs.length; i++) {
+          let div = divs[i];
+
+          // 스타일
+          div.style.height = '2px';
+          div.style.backgroundColor = `rgb(${i},${i},${i})`;
+        }
+      };
+    </script>
+  </head>
+
+  <body>
+    <div></div>
+  </body>
+</html>
