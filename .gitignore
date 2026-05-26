@@ -10,3 +10,6 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+# Large DB dump
+05_Database/01_DB_INTRO/root-2026_05_21_15_27_22-dump.sql
