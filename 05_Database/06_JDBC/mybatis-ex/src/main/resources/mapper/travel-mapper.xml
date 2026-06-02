@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+Mapper.xml
+- 실행시킬 SQL 구문 작성 ( Java 코드랑 분리 )
+- SQLSessionFactory가 mybatis-config에 등록된 mapper를 읽음
+-
+-->
+<mapper namespace="org.scoula.travel.dao.TravelDao">
+
+    <!--
+    namespace : dao 인터페이스의 전체 경로와 일치시키는 것이 관례
+    id : java 코드에서 호출할 SQL의 식별자
+    resultType : 반환 타입
+    parameterType : Java에서 전달받을 파라미터 클래스
+    -->
+
+
+    <select id="getTotalCount" resultType="int">
+        <![CDATA[select count(*) from tbl_travel]]>
+    </select>
+
+
+    <select id="getDistricts" resultType="String">
+        <![CDATA[select DISTINCT district from tbl_travel order by district]]>
+    </select>
+
+
+    <!--
+    특정지역의 여행지 목록 조히
+    resultType : 사용자 정의 타입으로 하고싶을 대는 클래스 경로를 전부 작성해주어야함
+    -->
+    <select id="getTravelsByDistrict" resultType="TravelVO">
+        <![CDATA[select * from tbl_travel where district = #{district} order by district, title]]>
+    </select>
+
+    <!--
+    Insert
+    - parameterType : TravelVO 객체의 getter를 이용해서 가져옴
+    -->
+    <insert id="insert" parameterType="TravelVO">
+        <![CDATA[insert into tbl_travel (district, title, description, address, phone ) values (#{district}, #{title}, #{description}, #{address}, #{phone})]]>
+    </insert>
+
+
+    <update id="update" parameterType="TravelVO">
+        <![CDATA[
+            update tbl_travel
+            set district = #{district},
+                title = #{title},
+                description = #{description},
+                address = #{address},
+                phone = #{phone}
+            where no = #{no}
+            ]]>
+    </update>
+
+    <delete id="remove">
+        <![CDATA[
+            delete from tbl_travel
+            where no = #{no}
+            ]]>
+    </delete>
+
+
+</mapper>
+
