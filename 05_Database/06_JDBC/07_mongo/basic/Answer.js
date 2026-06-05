@@ -108,7 +108,7 @@ db.product.find().sort({num : -1}).skip(50).limit(10);
 db.product.find({
     $or : [
         { num : { $lt : 15}},
-        { num : { $gt : 1995}}
+        { num : { $gt : 19995}}
     ]
 });
 
