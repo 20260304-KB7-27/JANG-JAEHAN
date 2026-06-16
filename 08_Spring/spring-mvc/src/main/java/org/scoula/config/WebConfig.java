@@ -48,6 +48,10 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
 
+        // 기본적으로 반환하는 404 NOT FOUND를 전송하지 않고,
+        // 예외(NoHandlerFoundException)를 던지도록 함
+        registration.setInitParameter("ThrowExceptionIfNoHandlerFound","true");
+
         // 멀티파트 파일 기능 설정
         MultipartConfigElement multipartConfigElement = new MultipartConfigElement(
                 LOCATION, MAX_FILE_SIZE, MAX_REQUEST_SIZE, FILE_SIZE_THRESHOLD
