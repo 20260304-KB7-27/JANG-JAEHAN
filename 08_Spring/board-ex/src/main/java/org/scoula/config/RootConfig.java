@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -18,7 +19,8 @@ import javax.sql.DataSource;
 // 주로 DB 설정
 @Configuration
 @PropertySource("classpath:/application.properties")
-@MapperScan(basePackages = {"org.scoula.example.mapper"})
+@MapperScan(basePackages = {"org.scoula.board.mapper"})
+@ComponentScan(basePackages = {"org.scoula.board.service"})
 public class RootConfig {
 
     @Value("${jdbc.driver}")
