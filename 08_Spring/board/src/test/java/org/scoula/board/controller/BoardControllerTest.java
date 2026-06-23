@@ -50,4 +50,21 @@ class BoardControllerTest {
         );
     }
 
+    // [POST] /board/create -> 핸들러 테스트
+    @Test
+    public void create() throws Exception {
+
+        // View 이름 받아오기
+        String resultPage = mockMvc.perform(
+                MockMvcRequestBuilders.post("/board/create")
+                        .param("title", "테스트 제목")
+                        .param("writer", "테스트 작성자")
+                        .param("content", "테스트 내용"))
+                .andReturn()
+                .getModelAndView()
+                .getViewName();
+
+        log.info(resultPage);
+    }
+
 }
