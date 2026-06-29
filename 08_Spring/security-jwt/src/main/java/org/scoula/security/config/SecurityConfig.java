@@ -3,16 +3,24 @@ package org.scoula.security.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mybatis.spring.annotation.MapperScan;
+import org.scoula.security.filter.JwtUsernamePasswordAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionCreationEvent;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -34,6 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
 
+    @Autowired
+    private JwtUsernamePasswordAuthenticationFilter jwtUsernamePasswordAuthenticationFilter;
+
     public CharacterEncodingFilter encodingFilter() {
         CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
         encodingFilter.setEncoding("UTF-8");
@@ -48,7 +59,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // CSRF 필터 앞에다 encodingFilter를 놓겠다.
-        http.addFilterBefore(encodingFilter(), CsrfFilter.class);
+        http.addFilterBefore(encodingFilter(), CsrfFilter.class)
+                .addFilterBefore(jwtUsernamePasswordAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class);
 
         // URL별 접근 권한 설정
         http.authorizeRequests()
@@ -62,30 +75,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // CORS 설정 추가
         http.cors();
 
+        http
+                .httpBasic().disable() // 기본 HTTP 인증 비활성화
+                .csrf().disable() // csrf 비활성화
+                .formLogin().disable() // form Login 비활성화
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 세션 생성 안함
+
         // URL별 접근 권할 설정
         http.authorizeRequests()
                 .antMatchers("/security/all")
-                    .permitAll() // 모든 권한 접근 허용
+                .permitAll() // 모든 권한 접근 허용
                 .antMatchers("/security/admin")
-                    .access("hasRole('ROLE_ADMIN')")
+                .access("hasRole('ROLE_ADMIN')")
                 .antMatchers("/security/member")
-                    .access("hasAnyRole('ROLE_ADMIN','ROLE_MEMBER')");
+                .access("hasAnyRole('ROLE_ADMIN','ROLE_MEMBER')");
 
-        http.formLogin() // form 기반 로그인 활성화
-                .loginPage("/security/login") // 로그인 페이지(커스텀) 이동
-                .loginProcessingUrl("/security/login") // 스프링 기본제공 POST 요청 시 로그인 시도
-                .defaultSuccessUrl("/");
-
-        http.logout()
-                .logoutUrl("/security/logout") // POST로 요청을 보내면 로그아웃 시도
-                .invalidateHttpSession(true) // 세션 초기화
-                .deleteCookies("JSESSIONID") // 삭제할 쿠키
-                .logoutSuccessUrl("/"); // 로그아웃 성공하면 이동할 페이지
-
-        http.sessionManagement()
-                .maximumSessions(1) // 동시 세션 수 제한
-                .maxSessionsPreventsLogin(true)// 제한된 동시 세션 수 만큼만 (브라우저 창 수) 로그인 유지 가능. false면 다른 창에서 로그인 했을 시 로그인 돼있던 기존 창에서는 로그아웃됨
-                .expiredUrl("/security/login?expired");
     }
 
     // 테스트용으로 메모리 상에 사용자 정보 등록 -> db 사용 x
@@ -108,6 +112,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth
                 .userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder()); // userDetailService
+    }
+
+    // 커스텀 하기 위한 Authentication 객체를 빈으로 등록
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
+    }
+
+    // 인증 인가 제외 URL
+    // - 보안 검사가 필요없는 정적 리소스나 특정 API는 Security Filter Chain을 거치지 않도록 설정
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring()
+                .antMatchers(
+                        "/assets/**",
+                        "/*", // 루트 경로 바로 아래 /login, /member 등
+                        "/api/member/**" // /api/member 하위 경로 제외
+                );
     }
 
     @Bean
