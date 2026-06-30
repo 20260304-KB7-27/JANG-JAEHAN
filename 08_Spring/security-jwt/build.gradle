@@ -26,6 +26,10 @@ tasks.withType(JavaCompile) {
 
 dependencies {
 
+    // Swagger 관련 의존성
+    implementation 'io.springfox:springfox-swagger2:2.9.2'       // Swagger 핵심 라이브러리
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'     // Swagger UI 웹 인터페이스
+
     // JJWT, JAVA JWT
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")

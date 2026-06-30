@@ -1,3 +1,4 @@
+### 성공
 POST http://localhost:8080/api/auth/login
 Content-Type: application/json
 
@@ -5,6 +6,7 @@ Content-Type: application/json
   "username": "admin",
   "password": "1234"
 }
+
 
 ###
 POST http://localhost:8080/api/auth/login
@@ -14,3 +16,34 @@ Content-Type: application/json
   "username": "admin",
   "password": "12345"
 }
+
+
+### 토큰 만료 예외 발생
+### eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4Mjc5NjYxMywiZXhwIjoxNzgyNzk2OTEzLCJrZXkiOiJ2YWx1ZSJ9.ORrSGaYrHDLMTOKTNgbJBnK97Wm-FkpIa8f1HYG69Ht7TMBdb1X_MSDOUr7fM1Te
+GET http://localhost:8080/member/3
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4Mjc5NjYxMywiZXhwIjoxNzgyNzk2OTEzLCJrZXkiOiJ2YWx1ZSJ9.ORrSGaYrHDLMTOKTNgbJBnK97Wm-FkpIa8f1HYG69Ht7TMBdb1X_MSDOUr7fM1Te
+
+
+### 토큰 일부분 지우고 요청 -> JWT 시그니쳐가 일치하지 않아서 예외 발생
+### eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4Mjc5NzQ0NCwiZXhwIjoxNzgyNzk3NzQ0LCJrZXkiOiJ2YWx1ZSJ9.eDWUtnuS9qdYj4ef9DKVDlUmAUTCss3vrulRyC-UiRLgW6I17zecMOLG3GuEnRRl
+GET http://localhost:8080/member/3
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4Mjc5NjYxMywiZXhwIjoxNzgyNzk2OTEzLCJrZXkiOiJ2YWx1ZSJ9.ORrSGaYrHDLMTOKTNgbJBnK97Wm-FkpIa8f1HYG69Ht7TMBdb1X_MSDOUr7fM
+
+
+### 토큰 없이 요청 보내기 -> CustomAuthenticationEntryPoint 동작
+GET http://localhost:8080/member/3
+# Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4Mjc5NjYxMywiZXhwIjoxNzgyNzk2OTEzLCJrZXkiOiJ2YWx1ZSJ9.ORrSGaYrHDLMTOKTNgbJBnK97Wm-FkpIa8f1HYG69Ht7TMBdb1X_MSDOUr7fM
+
+
+### 권한 문제 테스트 (인가 문제) -> CustomAccessDeniedHandler 동작
+GET http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user3",
+  "password": "1234"
+}
+
+### 일반회원(user3) 토큰으로 admin 권한의 url에 요청 보내보기
+GET http://localhost:8080/security/admin
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJ1c2VyMyIsImlhdCI6MTc4Mjc5OTI1NywiZXhwIjoxNzgyNzk5NTU3LCJrZXkiOiJ2YWx1ZSJ9.QD1g7DbMBzIbRT4ZW1u1478NRdJDXSJT0QWDCRL6GSnzOmfkjbsA-MP4MvW6IIHG

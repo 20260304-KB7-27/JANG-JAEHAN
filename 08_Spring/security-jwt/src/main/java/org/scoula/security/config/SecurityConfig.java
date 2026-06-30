@@ -3,7 +3,11 @@ package org.scoula.security.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.mybatis.spring.annotation.MapperScan;
+import org.scoula.security.filter.AuthenticationErrorFilter;
+import org.scoula.security.filter.JwtAuthenticationFilter;
 import org.scoula.security.filter.JwtUsernamePasswordAuthenticationFilter;
+import org.scoula.security.handler.CustomAccessDeniedHandler;
+import org.scoula.security.handler.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -41,6 +45,11 @@ Spring Security의 보안 설정 클래스
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter; // jwt 인증 필터
+    private final AuthenticationErrorFilter authenticationErrorFilter; // jwt 예외 필터
+    private final CustomAuthenticationEntryPoint authEntryPoint; // 인증되지 않은 요청 처리
+    private final CustomAccessDeniedHandler customAccessDeniedHandler; // 인가되지 않은 요청 (권한) 처리
+
 
     @Autowired
     private JwtUsernamePasswordAuthenticationFilter jwtUsernamePasswordAuthenticationFilter;
@@ -60,17 +69,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // CSRF 필터 앞에다 encodingFilter를 놓겠다.
         http.addFilterBefore(encodingFilter(), CsrfFilter.class)
-                .addFilterBefore(jwtUsernamePasswordAuthenticationFilter,
-                        UsernamePasswordAuthenticationFilter.class);
+                // jwt 인증 필터 -> 로그인 필터 -> UsernamePassword 필터
+                .addFilterBefore(authenticationErrorFilter, UsernamePasswordAuthenticationFilter.class) // JWT 예외 필터
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // JWT 인증 필터
+                .addFilterBefore(jwtUsernamePasswordAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // 로그인 필터
 
-        // URL별 접근 권한 설정
-        http.authorizeRequests()
-                .antMatchers("/security/alle")
-                .permitAll()
-                .antMatchers("/security/admin")
-                .access("hasRole('ROLE_ADMIN')")
-                .antMatchers("/security/member")
-                .access("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')");
+        // 예외 핸들러 등록
+        http.exceptionHandling()
+                .authenticationEntryPoint(authEntryPoint) // 인증이 안된 경우의 핸들러
+                .accessDeniedHandler(customAccessDeniedHandler); // 인가 문제
 
         // CORS 설정 추가
         http.cors();
@@ -81,15 +88,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin().disable() // form Login 비활성화
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS); // 세션 생성 안함
 
-        // URL별 접근 권할 설정
+        // URL별 접근 권한 설정
+        // 주의: anyRequest()는 반드시 마지막에 와야 하며, 그 뒤에 antMatchers를 호출하면 예외가 발생한다.
         http.authorizeRequests()
                 .antMatchers("/security/all")
-                .permitAll() // 모든 권한 접근 허용
+                    .permitAll() // 모든 권한 접근 허용
                 .antMatchers("/security/admin")
-                .access("hasRole('ROLE_ADMIN')")
+                    .access("hasRole('ROLE_ADMIN')")
                 .antMatchers("/security/member")
-                .access("hasAnyRole('ROLE_ADMIN','ROLE_MEMBER')");
-
+                    .access("hasAnyRole('ROLE_ADMIN', 'ROLE_MEMBER')")
+                .anyRequest().authenticated(); // 그 외 요청은 인증된 사용자만
     }
 
     // 테스트용으로 메모리 상에 사용자 정보 등록 -> db 사용 x
@@ -128,7 +136,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/assets/**",
                         "/*", // 루트 경로 바로 아래 /login, /member 등
-                        "/api/member/**" // /api/member 하위 경로 제외
+                        "/api/member/**", // /api/member 하위 경로 제외
+                        // swagger 관련 -> 필터 제외
+                        "/swagger-ui.html",
+                        "/swagger-resources/**",
+                        "/webjars/**",
+                        "/v2/api-docs"
                 );
     }
 

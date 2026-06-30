@@ -28,13 +28,24 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
     // Controller, ViewResolver(prefix, suffix 등) 등 웹과 관련된 설정
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[] {ServletConfig.class};
+        return new Class[] {
+                ServletConfig.class,
+                SwaggerConfig.class
+        };
     }
 
     // 스프링의 FrontController인 DispatcherServlet이 담당할 url 매핑 패턴, / : 모든 요청에 대해 매핑
+    // DispatcherServlet이 처리할 URL 패턴 목록
     @Override
     protected String[] getServletMappings() {
-        return new String[] { "/" };
+
+        return new String[] {
+                "/",
+                "/swagger-ui.html",       // Swagger UI 진입점
+                "/swagger-resources/**",  // Swagger 내부 리소스 요청
+                "/v2/api-docs",           // JSON 형태 API 명세 요청
+                "/webjars/**"             // Swagger UI JS/CSS 등 정적 자원
+        };
     }
 
     // POST body 문자 인코딩 필터 설정 - UTF-8 설정

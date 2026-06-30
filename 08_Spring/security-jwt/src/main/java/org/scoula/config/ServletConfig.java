@@ -26,8 +26,16 @@ public class ServletConfig implements WebMvcConfigurer { // WebMvcConfigurer 상
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry
-                .addResourceHandler("/resources/**") // url이 /resources/로 시작하는 모든 경로 *-> 해당레벨, **-> 하위 폴더 포함 모든 파일
-                .addResourceLocations("/resources/"); // webapp/resources/경로로 매핑
+                .addResourceHandler("/resources/**")
+                .addResourceLocations("/resources/");
+        registry.addResourceHandler("/swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/swagger-resources/**")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/v2/api-docs")
+                .addResourceLocations("classpath:/META-INF/resources/");
     }
 
     // jsp 쓰기 위한 view Resolver 설정
