@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
+import router from '@/router';
 
 // create로 axios 객체 생성해서 공통 응답 처리/ 공통 요청 처리할 객체 커스텀
 const instance = axios.create({
   timeout: 1000, // 요청 타임아웃
 });
 
-const router = useRouter();
+// const router = useRouter();
 
 // 공통 응답 처리 (예외같은 공통으로 처리될 응답)
 instance.interceptors.response.use(
