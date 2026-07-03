@@ -7,9 +7,15 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
+
+const auth = useAuthStore();
+const router = useRouter();
+
 const logout = (e) => {
-  // 로그아웃 처리 필요
-  router.push("/");
+  auth.logout();
+  router.push('/auth/login');
 };
 </script>
 
